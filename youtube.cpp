@@ -12,6 +12,7 @@
 #include <ctime>
 #include <vector>
 #include <array>
+#include <fstream>
 
 
 using std::string; //ideal to not have to ustilize std in front of string
@@ -19,11 +20,11 @@ using std::cout;
 using std::cin;
 using std::endl;
 
-void print_array(std::array<int, 251> array, int size)
+void print_vector(std::vector<int> vector)
 {
-    for(int i = 0; i < size; i++)
+    for(int i = 0; i < vector.size(); i++)
     {
-        cout << array[i] << '\t';
+        cout << vector[i] << '\t';
     }
     cout << endl;
 }
@@ -31,9 +32,7 @@ void print_array(std::array<int, 251> array, int size)
 
 void play_game()
 {
-    std::array<int, 251> guesses;
-    int count = 0;
-
+    std::vector<int> guesses;
     int random = rand() % 251;
     cout << random << endl;
     cout << "Guess a number: ";
@@ -41,10 +40,10 @@ void play_game()
     {
         int guess;
         cin >> guess;
-        guesses[count++] = guess;
+        guesses.push_back(guess);
         if(guess == random)
         {
-           cout << "You win! It took you " << count << " guesses!\n";
+           cout << "You win! It took you " << guesses.size() << " guesses!\n";
            break; 
         }
         else if(guess < random)
@@ -56,7 +55,32 @@ void play_game()
             cout << "It is lower\n";
         }
     }
-    print_array(guesses, count);
+
+    std::ifstream input("best_score.txt");
+    if(!input.is_open())
+    {
+        std::cout << "Unable to read file\n";
+        return;
+    }
+
+    int best_score;
+    input >> best_score;
+
+    std::ofstream output("best_score.txt");
+    if(!output.is_open())
+    {
+        std::cout << "Unable to read file\n";
+        return;
+    }
+    if(guesses.size() < best_score)
+    {
+        output << guesses.size();
+    }
+    else
+    {
+        output << best_score;
+    }
+    print_vector(guesses);
 }
 
 int main()
